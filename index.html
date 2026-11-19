@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,700;9..144,900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./style.css?v=prueba-correo">
-<script src="./app.js?v=prueba-correo" type="module"></script>
+<script src="./app.js?v=gmail" type="module"></script>
 </head>
 <body>
 <div class="festive-intro" id="festive-intro" aria-hidden="true"></div>
@@ -49,6 +49,7 @@
 <h2>Organizar el sorteo</h2>
 <form id="login"><label for="key">Clave de organización</label><input type="password" id="key" autocomplete="current-password" required><button class="primary" type="submit">Abrir panel</button></form>
 <div id="panel" hidden><p id="summary" class="muted"></p><button class="primary" type="button" id="draw">Cerrar inscripciones y hacer el sorteo</button><div id="messages"></div>
+<button class="secondary" id="send-pending" type="button" hidden>Enviar avisos pendientes</button>
 <form id="edit-participant" hidden>
 <h3>Editar participantes</h3>
 <label for="participant-choice">Participante</label>
@@ -70,7 +71,13 @@
 <label for="test-email-address">Tu correo electrónico</label>
 <input id="test-email-address" type="email" autocomplete="email" maxlength="254" required>
 <button class="secondary" type="submit">Abrir correo de prueba</button>
-</form></div>
+</form>
+<section id="test-gmail" hidden>
+<h3>Probar envío automático</h3>
+<p class="muted">Envía un aviso de prueba a la cuenta de Gmail del organizador.</p>
+<button class="secondary" id="gmail-test-button" type="button">Enviar prueba por Gmail</button>
+<p class="status" id="gmail-test-status" role="status"></p>
+</section></div>
 <p id="organizer-status" class="status" role="status"></p>
 </section>
 </main>

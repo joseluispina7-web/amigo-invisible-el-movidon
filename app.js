@@ -73,7 +73,56 @@ function fillParticipant() {
   participantEmail.value = person?.email ?? '';
 }
 
-function openPanel({ count, matches, people }) {
+let automaticMail = false;
+let participantCount = 0;
+const drawButton = byId('draw');
+const sendPending = byId('send-pending');
+const gmailTest = byId('gmail-test-button');
+
+function mailAction(action) {
+  return request('/mail?action=' + action, {
+    method: 'POST', headers: { Authorization: 'Bearer ' + organizerKey }
+  });
+}
+
+async function sendNotifications() {
+  sendPending.disabled = true;
+  organizerStatus.textContent = 'Enviando avisos desde Gmail…';
+  try {
+    const { sent, pending, review } = await mailAction('send');
+    organizerStatus.textContent = 'Gmail aceptó ' + sent + ' avisos.' +
+      (pending ? ' Pendientes por el límite diario: ' + pending + '.' : '') +
+      (review ? ' Envíos sin confirmación para revisar en Enviados de Gmail: ' + review + '.' : '');
+    sendPending.hidden = pending === 0;
+  } catch (error) {
+    organizerStatus.textContent = error.message;
+  } finally {
+    sendPending.disabled = false;
+  }
+}
+
+sendPending.addEventListener('click', sendNotifications);
+gmailTest.addEventListener('click', async () => {
+  gmailTest.disabled = true;
+  const status = byId('gmail-test-status');
+  status.textContent = 'Enviando prueba…';
+  try {
+    const { sender } = await mailAction('test');
+    status.textContent = 'Gmail aceptó el envío de prueba a ' + sender + '.';
+  } catch (error) {
+    status.textContent = error.message;
+  } finally {
+    gmailTest.disabled = false;
+  }
+});
+
+function openPanel({ count, matches, people, mailConfigured }) {
+  automaticMail = Boolean(mailConfigured);
+  participantCount = count;
+  byId('test-email').hidden = automaticMail;
+  byId('test-gmail').hidden = !automaticMail;
+  sendPending.hidden = !automaticMail || !matches;
+  drawButton.textContent = automaticMail ? 'Hacer sorteo y enviar avisos' : 'Cerrar inscripciones y hacer el sorteo';
   byId('panel').hidden = false;
   byId('summary').textContent = count + (count === 1 ? ' persona inscrita.' : ' personas inscritas.');
   byId('draw').hidden = Boolean(matches);
@@ -85,6 +134,7 @@ function openPanel({ count, matches, people }) {
   ));
   fillParticipant();
   if (!matches) return;
+  if (automaticMail) return;
   organizerStatus.textContent = 'Abre un borrador por participante y confirma cada envío en tu aplicación de correo.';
   byId('messages').replaceChildren(...matches.map(person => {
     const item = document.createElement('div');
@@ -191,11 +241,19 @@ async function saveParticipant(method, changes) {
 }
 
 byId('draw').addEventListener('click', async event => {
-  if (!confirm('Se cerrarán las inscripciones y se guardará el resultado. ¿Hacer el sorteo?')) return;
+  const prompt = automaticMail
+    ? 'Se cerrarán las inscripciones y se enviará un correo privado a cada participante. ¿Hacer el sorteo?'
+    : 'Se cerrarán las inscripciones y se guardará el resultado. ¿Hacer el sorteo?';
+  if (!confirm(prompt)) return;
   const button = event.currentTarget;
   button.disabled = true;
   try {
+    if (automaticMail) {
+      const { quota } = await mailAction('status');
+      if (quota < participantCount) throw new Error('Gmail no tiene suficiente cuota disponible hoy para enviar todos los avisos.');
+    }
     openPanel(await request('/organizer', { method: 'POST', headers: { Authorization: 'Bearer ' + organizerKey } }));
+    if (automaticMail) await sendNotifications();
   } catch (error) {
     organizerStatus.textContent = error.message;
     button.disabled = false;
