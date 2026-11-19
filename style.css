@@ -18,7 +18,7 @@ body {
 }
 [hidden] { display: none !important; }
 .wrap { width: min(880px, calc(100% - 28px)); margin-inline: auto; }
-.top { background: #103326; color: var(--cream); border-bottom: 1px solid #ffffff2e; }
+.top { position: sticky; top: 0; z-index: 5; background: #103326; color: var(--cream); border-bottom: 1px solid #ffffff2e; }
 .brand {
   min-height: 66px;
   display: flex;

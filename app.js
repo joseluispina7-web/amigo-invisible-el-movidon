@@ -322,32 +322,32 @@ function syncMusicControl() {
   byId('music-label').textContent = music.paused ? 'Activar música' : 'Pausar música';
 }
 
+const musicGestures = ['touchend', 'pointerup', 'click', 'keydown'];
+
 function retryMusicOnInteraction(event) {
-  if (musicToggle.contains(event.target)) return;
-  clearMusicRetry();
+  if (!event.isTrusted || !music.paused || musicToggle.contains(event.target)) return;
   startMusic();
 }
 
 function clearMusicRetry() {
-  document.removeEventListener('click', retryMusicOnInteraction, true);
-  document.removeEventListener('keydown', retryMusicOnInteraction, true);
+  for (const event of musicGestures) document.removeEventListener(event, retryMusicOnInteraction, true);
 }
 
-async function startMusic(retryOnInteraction = false) {
+async function startMusic() {
   try {
     await music.play();
     clearMusicRetry();
   } catch (error) {
-    if (error.name === 'NotAllowedError' && retryOnInteraction) {
-      document.addEventListener('click', retryMusicOnInteraction, true);
-      document.addEventListener('keydown', retryMusicOnInteraction, true);
-    } else if (error.name !== 'AbortError') {
-      byId('music-label').textContent = 'Reintentar música';
-    }
+    if (error.name === 'NotAllowedError' || error.name === 'AbortError') return;
+    clearMusicRetry();
+    byId('music-label').textContent = 'Reintentar música';
   }
 }
 
-music.addEventListener('play', syncMusicControl);
+music.addEventListener('play', () => {
+  clearMusicRetry();
+  syncMusicControl();
+});
 music.addEventListener('pause', syncMusicControl);
 syncMusicControl();
 musicToggle.addEventListener('click', () => {
@@ -355,4 +355,7 @@ musicToggle.addEventListener('click', () => {
   if (!music.paused) music.pause();
   else startMusic();
 });
-startMusic(true);
+for (const event of musicGestures) {
+  document.addEventListener(event, retryMusicOnInteraction, { capture: true, passive: true });
+}
+startMusic();
