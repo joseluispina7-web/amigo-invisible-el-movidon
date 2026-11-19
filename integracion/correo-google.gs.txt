@@ -27,7 +27,7 @@ function doPost(event) {
     return reply({ ok: false, error: 'wrong_sender' });
   }
   if (request.action === 'status') {
-    return reply({ ok: true, sender: REMITENTE, quota: MailApp.getRemainingDailyQuota() });
+    return reply({ ok: true, sender: REMITENTE, drawVersion: 2, quota: MailApp.getRemainingDailyQuota() });
   }
 
   if (request.action === 'test') {
@@ -43,7 +43,8 @@ function doPost(event) {
 
   if (request.action !== 'send' || !Array.isArray(request.messages) ||
       !request.messages.length || request.messages.length > 20 ||
-      !request.messages.every(validAssignment)) {
+      !request.messages.every(validAssignment) ||
+      (request.drawId !== undefined && !/^[a-f0-9-]{36}$/.test(request.drawId))) {
     return reply({ ok: false, error: 'invalid_request' });
   }
 
@@ -51,9 +52,10 @@ function doPost(event) {
   if (!lock.tryLock(5000)) return reply({ ok: false, error: 'busy' });
   try {
     let quota = MailApp.getRemainingDailyQuota();
+    const drawKey = request.drawId ? EVENTO + ':' + request.drawId : EVENTO;
     const results = request.messages.map(person => {
       const email = person.email.toLowerCase();
-      const digest = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, EVENTO + ':' + email);
+      const digest = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, drawKey + ':' + email);
       const id = 'mail:' + Utilities.base64EncodeWebSafe(digest);
       const state = properties.getProperty(id);
       if (state) return state;
@@ -64,9 +66,10 @@ function doPost(event) {
         MailApp.sendEmail({
           to: email,
           name: 'Amigo invisible El Movidón',
-          subject: 'Tu amigo invisible · El Movidón',
+          subject: request.drawId ? '[NUEVO SORTEO] Tu amigo invisible · El Movidón' : 'Tu amigo invisible · El Movidón',
           body: [
             '¡Hola, ' + person.name + '!', '',
+            ...(request.drawId ? ['Esta asignación sustituye a la del sorteo anterior.', ''] : []),
             'En el amigo invisible «El Movidón» te ha tocado regalar a ' + person.recipient + '.',
             'El intercambio será el 26 de diciembre de 2026.',
             '', '¡Guárdate la sorpresa!'
