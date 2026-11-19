@@ -123,3 +123,49 @@ if (new URLSearchParams(location.search).has('organizar')) {
 } else {
   loadRoster();
 }
+
+const video = byId('christmas-video');
+const videoToggle = byId('video-toggle');
+const music = byId('christmas-music');
+const musicToggle = byId('music-toggle');
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+function syncVideoControl() {
+  videoToggle.setAttribute('aria-label', video.paused ? 'Reproducir vídeo' : 'Pausar vídeo');
+  videoToggle.firstElementChild.textContent = video.paused ? '▶' : 'Ⅱ';
+}
+
+function playVideo() {
+  video.play().catch(syncVideoControl);
+}
+
+videoToggle.hidden = false;
+video.addEventListener('play', syncVideoControl);
+video.addEventListener('pause', syncVideoControl);
+videoToggle.addEventListener('click', () => {
+  if (video.paused) playVideo();
+  else video.pause();
+});
+if (!reduceMotion.matches) playVideo();
+reduceMotion.addEventListener('change', event => {
+  if (event.matches) video.pause();
+});
+
+function syncMusicControl() {
+  musicToggle.setAttribute('aria-pressed', String(!music.paused));
+  byId('music-label').textContent = music.paused ? 'Activar música' : 'Pausar música';
+}
+
+music.addEventListener('play', syncMusicControl);
+music.addEventListener('pause', syncMusicControl);
+musicToggle.addEventListener('click', async () => {
+  if (!music.paused) {
+    music.pause();
+    return;
+  }
+  try {
+    await music.play();
+  } catch (error) {
+    if (error.name !== 'AbortError') byId('music-label').textContent = 'Reintentar música';
+  }
+});
