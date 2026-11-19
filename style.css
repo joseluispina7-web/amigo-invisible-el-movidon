@@ -201,3 +201,20 @@ footer a { display: inline-flex; min-height: 44px; align-items: center; color: v
 #delivery-list [data-status="pending"] { color: #6a460d; }
 #delivery-list [data-status="review"] { color: #8c1230; }
 #send-pending { margin-top: 8px; }
+
+.countdown {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(7px, 2vw, 12px);
+  margin-top: 14px;
+  padding: 6px 12px;
+  border: 1px solid #f3cc8380;
+  border-radius: 999px;
+  background: #6f1029aa;
+  color: var(--gold);
+  font-size: .875rem;
+}
+.countdown-unit { display: inline-flex; align-items: baseline; gap: 3px; white-space: nowrap; }
+.countdown-unit strong { color: var(--cream); font-size: 1rem; font-variant-numeric: tabular-nums; }
+.countdown-star { font-size: .7rem; }

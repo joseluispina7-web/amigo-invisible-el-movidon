@@ -2,6 +2,24 @@ const api = location.hostname.endsWith('.github.io')
   ? 'https://amigoinvisiblemovidon.cabledlute2.chatgpt.site/api'
   : '/api';
 const byId = id => document.getElementById(id);
+const eventStart = Date.parse('2026-12-26T00:00:00+01:00');
+const eventEnd = Date.parse('2026-12-27T00:00:00+01:00');
+
+function updateCountdown() {
+  const now = Date.now();
+  byId('countdown').hidden = now >= eventStart;
+  byId('countdown-today').hidden = now < eventStart || now >= eventEnd;
+  if (now >= eventStart) return;
+  const minutes = Math.ceil((eventStart - now) / 60000);
+  const days = Math.floor(minutes / 1440);
+  byId('countdown-days').textContent = days;
+  byId('countdown-days').nextElementSibling.textContent = days === 1 ? 'día' : 'días';
+  byId('countdown-hours').textContent = Math.floor(minutes / 60) % 24;
+  byId('countdown-minutes').textContent = minutes % 60;
+}
+
+updateCountdown();
+setInterval(updateCountdown, 15000);
 
 async function request(path, options) {
   const response = await fetch(api + path, options);
