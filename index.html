@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,700;9..144,900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./style.css?v=musica">
-<script src="./app.js?v=musica" type="module"></script>
+<link rel="stylesheet" href="./style.css?v=presupuesto">
+<script src="./app.js?v=presupuesto" type="module"></script>
 </head>
 <body>
 <div class="festive-intro" id="festive-intro" aria-hidden="true"></div>
@@ -31,7 +31,7 @@
   <div class="hero-title">
     <span class="holly" aria-hidden="true">✦ ❄ ✦</span>
     <h1><span>Amigo invisible</span>El Movidón</h1>
-    <p><time datetime="2026-12-26">26 de diciembre de 2026</time><span>Presupuesto por definir</span></p>
+    <p><time datetime="2026-12-26">26 de diciembre de 2026</time><span id="public-budget">Presupuesto por definir</span></p>
   </div>
 </section>
 <div id="public" class="layout">
@@ -49,7 +49,18 @@
 <h2>Organizar el sorteo</h2>
 <form id="login"><label for="key">Clave de organización</label><input type="password" id="key" autocomplete="current-password" required><button class="primary" type="submit">Abrir panel</button></form>
 <div id="panel" hidden><p id="summary" class="muted"></p><button class="primary" type="button" id="draw">Cerrar inscripciones y hacer el sorteo</button><div id="messages"></div>
-<button class="secondary" id="send-pending" type="button" hidden>Enviar avisos pendientes</button>
+<section id="delivery" hidden>
+<h3>Estado de los correos</h3>
+<ul id="delivery-list"></ul>
+</section>
+<button class="secondary" id="send-pending" type="button" hidden>Reintentar solo los pendientes</button>
+<form id="budget-form">
+<h3>Presupuesto</h3>
+<label for="budget">Importe o indicación para el grupo</label>
+<input id="budget" maxlength="80" placeholder="Por ejemplo, 20 €">
+<button class="secondary" type="submit">Guardar presupuesto</button>
+<p class="status" id="budget-status" role="status"></p>
+</form>
 <form id="edit-participant" hidden>
 <h3>Editar participantes</h3>
 <label for="participant-choice">Participante</label>

@@ -27,7 +27,7 @@ function doPost(event) {
     return reply({ ok: false, error: 'wrong_sender' });
   }
   if (request.action === 'status') {
-    return reply({ ok: true, sender: REMITENTE, drawVersion: 2, quota: MailApp.getRemainingDailyQuota() });
+    return reply({ ok: true, sender: REMITENTE, drawVersion: 2, supportsBudget: true, quota: MailApp.getRemainingDailyQuota() });
   }
 
   if (request.action === 'test') {
@@ -44,6 +44,7 @@ function doPost(event) {
   if (request.action !== 'send' || !Array.isArray(request.messages) ||
       !request.messages.length || request.messages.length > 20 ||
       !request.messages.every(validAssignment) ||
+      (request.budget !== undefined && (typeof request.budget !== 'string' || request.budget.length > 80)) ||
       (request.drawId !== undefined && !/^[a-f0-9-]{36}$/.test(request.drawId))) {
     return reply({ ok: false, error: 'invalid_request' });
   }
@@ -72,12 +73,15 @@ function doPost(event) {
             ...(request.drawId ? ['Esta asignación sustituye a la del sorteo anterior.', ''] : []),
             '🎁 Te toca regalarle a ' + person.recipient + '.',
             '📅 Intercambio el 26 de diciembre de 2026.',
+            ...(request.budget ? ['💶 Presupuesto: ' + request.budget + '.'] : []),
             '', '¡Feliz Navidad! 🎄'
           ].join('\n'),
           htmlBody: '<p>¡' + escapeHtml(person.name) + '! Ya salió el sorteo 🎅</p>' +
             (request.drawId ? '<p>Esta asignación sustituye a la del sorteo anterior.</p>' : '') +
             '<p>🎁 Te toca regalarle a <strong>' + escapeHtml(person.recipient) + '</strong>.<br>' +
-            '📅 Intercambio el <strong>26 de diciembre de 2026</strong>.</p>' +
+            '📅 Intercambio el <strong>26 de diciembre de 2026</strong>.' +
+            (request.budget ? '<br>💶 Presupuesto: <strong>' + escapeHtml(request.budget) + '</strong>.' : '') +
+            '</p>' +
             '<p>¡Feliz Navidad! 🎄</p>'
         });
         quota--;

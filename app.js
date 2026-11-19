@@ -10,11 +10,16 @@ async function request(path, options) {
   return data;
 }
 
+function showBudget(budget) {
+  byId('public-budget').textContent = budget ? 'Presupuesto: ' + budget : 'Presupuesto por definir';
+}
+
 const signup = byId('signup');
 
 async function loadRoster() {
   try {
-    const { names, closed } = await request('/participants');
+    const { names, closed, budget } = await request('/participants');
+    showBudget(budget);
     byId('count').textContent = names.length;
     byId('roster').replaceChildren(...names.map(name => {
       const item = document.createElement('li');
@@ -75,9 +80,50 @@ function fillParticipant() {
 
 let automaticMail = false;
 let participantCount = 0;
+let currentBudget = '';
 const drawButton = byId('draw');
 const sendPending = byId('send-pending');
 const gmailTest = byId('gmail-test-button');
+const budgetForm = byId('budget-form');
+const budgetInput = byId('budget');
+
+function showDelivery(delivery) {
+  const labels = { sent: 'Aceptado por Gmail', pending: 'Pendiente', review: 'Revisar' };
+  byId('delivery-list').replaceChildren(...delivery.map(({ name, email, status }) => {
+    const item = document.createElement('li');
+    const label = document.createElement('span');
+    label.textContent = name + ' · ' + email;
+    const badge = document.createElement('strong');
+    badge.textContent = labels[status];
+    badge.dataset.status = status;
+    item.append(label, badge);
+    return item;
+  }));
+  byId('delivery').hidden = delivery.length === 0;
+  sendPending.hidden = !delivery.some(person => person.status === 'pending');
+}
+
+budgetForm.addEventListener('submit', async event => {
+  event.preventDefault();
+  const button = budgetForm.querySelector('button');
+  const status = byId('budget-status');
+  button.disabled = true;
+  try {
+    const data = await request('/organizer?action=budget', {
+      method: 'PATCH',
+      headers: { Authorization: 'Bearer ' + organizerKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ budget: budgetInput.value })
+    });
+    currentBudget = data.budget;
+    budgetInput.value = currentBudget;
+    showBudget(currentBudget);
+    status.textContent = currentBudget ? 'Presupuesto guardado.' : 'Presupuesto por definir.';
+  } catch (error) {
+    status.textContent = error.message;
+  } finally {
+    button.disabled = false;
+  }
+});
 
 function mailAction(action) {
   return request('/mail?action=' + action, {
@@ -89,11 +135,11 @@ async function sendNotifications() {
   sendPending.disabled = true;
   organizerStatus.textContent = 'Enviando avisos desde Gmail…';
   try {
-    const { sent, pending, review } = await mailAction('send');
+    const { sent, pending, review, delivery } = await mailAction('send');
     organizerStatus.textContent = 'Gmail aceptó ' + sent + ' avisos.' +
-      (pending ? ' Pendientes por el límite diario: ' + pending + '.' : '') +
+      (pending ? ' Pendientes: ' + pending + '.' : '') +
       (review ? ' Envíos sin confirmación para revisar en Enviados de Gmail: ' + review + '.' : '');
-    sendPending.hidden = pending === 0;
+    showDelivery(delivery);
   } catch (error) {
     organizerStatus.textContent = error.message;
   } finally {
@@ -116,12 +162,15 @@ gmailTest.addEventListener('click', async () => {
   }
 });
 
-function openPanel({ count, matches, people, mailConfigured }) {
+function openPanel({ count, matches, people, mailConfigured, budget = '', delivery = [] }) {
   automaticMail = Boolean(mailConfigured);
   participantCount = count;
   byId('test-email').hidden = automaticMail;
   byId('test-gmail').hidden = !automaticMail;
-  sendPending.hidden = !automaticMail || !matches;
+  currentBudget = budget;
+  budgetInput.value = currentBudget;
+  showBudget(currentBudget);
+  showDelivery(automaticMail ? delivery : []);
   drawButton.textContent = automaticMail ? 'Hacer sorteo y enviar avisos' : 'Cerrar inscripciones y hacer el sorteo';
   byId('panel').hidden = false;
   byId('summary').textContent = count + (count === 1 ? ' persona inscrita.' : ' personas inscritas.');
@@ -158,6 +207,7 @@ function assignmentEmail(person, test = false) {
     '¡' + person.name + '! Ya salió el sorteo 🎅',
     '🎁 Te toca regalarle a ' + person.recipient + '.',
     '📅 Intercambio el 26 de diciembre de 2026.',
+    ...(currentBudget ? ['💶 Presupuesto: ' + currentBudget + '.'] : []),
     '', '¡Feliz Navidad! 🎄'
   ].join('\r\n');
   return 'mailto:' + encodeURIComponent(person.email).replace('%40', '@') +

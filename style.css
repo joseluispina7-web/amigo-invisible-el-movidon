@@ -190,3 +190,14 @@ footer a { display: inline-flex; min-height: 44px; align-items: center; color: v
 #test-email { display: grid; gap: 8px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
 #test-email h3, #test-email p, #test-email label { margin: 0; }
 #test-email button { justify-self: start; }
+
+#budget-form, #delivery { display: grid; gap: 9px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+#budget-form h3, #budget-form label, #delivery h3 { margin: 0; }
+#budget-form button { justify-self: start; }
+#delivery-list { list-style: none; padding: 0; margin: 0; }
+#delivery-list li { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px 12px; padding: 9px 0; border-top: 1px solid var(--border); overflow-wrap: anywhere; }
+#delivery-list strong { font-size: .88rem; }
+#delivery-list [data-status="sent"] { color: #145535; }
+#delivery-list [data-status="pending"] { color: #6a460d; }
+#delivery-list [data-status="review"] { color: #8c1230; }
+#send-pending { margin-top: 8px; }
