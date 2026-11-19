@@ -79,32 +79,24 @@ button:disabled { cursor: default; opacity: .65; }
   border-radius: 50%;
 }
 .festive-intro {
-  position: absolute;
-  z-index: 1;
+  position: fixed;
+  z-index: 10;
   inset: 0;
   pointer-events: none;
   overflow: hidden;
 }
 .festive-intro span {
-  --delay: 0ms;
   position: absolute;
-  left: 13%;
-  top: 26%;
-  font-size: clamp(2.25rem, 10vw, 4rem);
+  left: var(--left);
+  top: -3rem;
+  font-size: var(--size);
   color: var(--gold);
-  opacity: 0;
-  animation: ornament 1.55s var(--delay) ease-out both;
   filter: drop-shadow(0 4px 5px #22130c95);
+  animation: ornament var(--duration) var(--delay) linear both;
 }
-.festive-intro span:nth-child(2) { left: 74%; top: 20%; --delay: 120ms; }
-.festive-intro span:nth-child(3) { left: 34%; top: 12%; --delay: 240ms; }
-.festive-intro span:nth-child(4) { left: 78%; top: 63%; --delay: 300ms; }
-.festive-intro span:nth-child(5) { left: 60%; top: 39%; --delay: 420ms; }
-.festive-intro span:nth-child(6) { left: 12%; top: 69%; --delay: 450ms; }
 @keyframes ornament {
-  0% { opacity: 0; transform: translateY(20px) rotate(-20deg) scale(.4); }
-  25%, 64% { opacity: 1; transform: translateY(0) rotate(8deg) scale(1); }
-  100% { opacity: 0; transform: translateY(-26px) rotate(16deg) scale(.8); }
+  from { transform: translate3d(0, 0, 0) rotate(-20deg); }
+  to { transform: translate3d(var(--drift), calc(100vh + 7rem), 0) rotate(var(--rotation)); }
 }
 .hero-title {
   position: relative;
@@ -178,3 +170,18 @@ footer a { display: inline-flex; min-height: 44px; align-items: center; color: v
 @media (prefers-reduced-motion: reduce) {
   .festive-intro { display: none; }
 }
+
+#edit-participant { margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border); }
+#edit-participant h3 { margin: 0 0 12px; }
+#participant-choice {
+  width: 100%;
+  min-height: 48px;
+  padding: 9px 12px;
+  border: 1px solid #a5ac96;
+  border-radius: 8px;
+  background: #fffefa;
+  color: inherit;
+  font: inherit;
+}
+#participant-fields { min-width: 0; border: 0; margin: 8px 0; padding: 0; }
+#participant-fields label, #participant-fields button, #reload-participants { margin-top: 8px; }

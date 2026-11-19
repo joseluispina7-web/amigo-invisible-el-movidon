@@ -57,11 +57,33 @@ signup.addEventListener('submit', async event => {
 let organizerKey = '';
 const organizerStatus = byId('organizer-status');
 
-function openPanel({ count, matches }) {
+const editForm = byId('edit-participant');
+const participantChoice = byId('participant-choice');
+const participantFields = byId('participant-fields');
+const participantName = byId('participant-name');
+const participantEmail = byId('participant-email');
+const editStatus = byId('edit-status');
+let participants = [];
+
+function fillParticipant() {
+  const person = participants[participantChoice.value];
+  participantFields.hidden = !person;
+  participantFields.disabled = !person;
+  participantName.value = person?.name ?? '';
+  participantEmail.value = person?.email ?? '';
+}
+
+function openPanel({ count, matches, people }) {
   byId('panel').hidden = false;
   byId('summary').textContent = count + (count === 1 ? ' persona inscrita.' : ' personas inscritas.');
   byId('draw').hidden = Boolean(matches);
   byId('draw').disabled = count < 2;
+  participants = people ?? [];
+  editForm.hidden = Boolean(matches) || !people;
+  participantChoice.replaceChildren(new Option('Elige a una persona', ''), ...participants.map(
+    (person, index) => new Option(person.name + ' · ' + person.email, index)
+  ));
+  fillParticipant();
   if (!matches) return;
   organizerStatus.textContent = 'Abre un borrador por participante y confirma cada envío en tu aplicación de correo.';
   byId('messages').replaceChildren(...matches.map(person => {
@@ -100,6 +122,51 @@ byId('login').addEventListener('submit', async event => {
     openPanel(data);
   } catch (error) {
     organizerStatus.textContent = error.message;
+  }
+});
+
+participantChoice.addEventListener('change', () => {
+  editStatus.textContent = '';
+  fillParticipant();
+});
+
+byId('reload-participants').addEventListener('click', async event => {
+  const button = event.currentTarget;
+  button.disabled = true;
+  try {
+    openPanel(await request('/organizer', { headers: { Authorization: 'Bearer ' + organizerKey } }));
+    editStatus.textContent = 'Lista actualizada.';
+  } catch (error) {
+    editStatus.textContent = error.message;
+  } finally {
+    button.disabled = false;
+  }
+});
+
+editForm.addEventListener('submit', async event => {
+  event.preventDefault();
+  const previous = participants[participantChoice.value];
+  if (!previous) return;
+  const changes = Object.fromEntries(new FormData(editForm));
+  participantChoice.disabled = true;
+  participantFields.disabled = true;
+  byId('reload-participants').disabled = true;
+  byId('draw').disabled = true;
+  editStatus.textContent = 'Guardando cambios…';
+  try {
+    openPanel(await request('/organizer', {
+      method: 'PATCH',
+      headers: { Authorization: 'Bearer ' + organizerKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...changes, previous })
+    }));
+    editStatus.textContent = 'Cambios guardados.';
+  } catch (error) {
+    editStatus.textContent = error.message;
+  } finally {
+    participantChoice.disabled = false;
+    participantFields.disabled = participantFields.hidden;
+    byId('reload-participants').disabled = false;
+    byId('draw').disabled = participants.length < 2;
   }
 });
 
@@ -146,7 +213,23 @@ videoToggle.addEventListener('click', () => {
   if (video.paused) playVideo();
   else video.pause();
 });
-if (!reduceMotion.matches) playVideo();
+if (!reduceMotion.matches) {
+  playVideo();
+  const intro = byId('festive-intro');
+  const ornaments = ['🎁', '❄', '🎄', '🔔', '✦', '🎅', '🍬'];
+  for (let index = 0; index < 36; index++) {
+    const ornament = document.createElement('span');
+    ornament.textContent = ornaments[index % ornaments.length];
+    ornament.style.setProperty('--left', (index * 37 % 97) + '%');
+    ornament.style.setProperty('--delay', (index * 73 % 570) + 'ms');
+    ornament.style.setProperty('--duration', (1720 + index * 97 % 530) + 'ms');
+    ornament.style.setProperty('--size', (1.15 + index * 7 % 14 / 10) + 'rem');
+    ornament.style.setProperty('--drift', (index * 17 % 69 - 34) + 'px');
+    ornament.style.setProperty('--rotation', (120 + index * 31 % 270) + 'deg');
+    intro.append(ornament);
+  }
+  setTimeout(() => intro.remove(), 2900);
+}
 reduceMotion.addEventListener('change', event => {
   if (event.matches) video.pause();
 });
@@ -156,16 +239,36 @@ function syncMusicControl() {
   byId('music-label').textContent = music.paused ? 'Activar música' : 'Pausar música';
 }
 
-music.addEventListener('play', syncMusicControl);
-music.addEventListener('pause', syncMusicControl);
-musicToggle.addEventListener('click', async () => {
-  if (!music.paused) {
-    music.pause();
-    return;
-  }
+function retryMusicOnInteraction(event) {
+  if (musicToggle.contains(event.target)) return;
+  clearMusicRetry();
+  startMusic();
+}
+
+function clearMusicRetry() {
+  document.removeEventListener('click', retryMusicOnInteraction, true);
+  document.removeEventListener('keydown', retryMusicOnInteraction, true);
+}
+
+async function startMusic(retryOnInteraction = false) {
   try {
     await music.play();
+    clearMusicRetry();
   } catch (error) {
-    if (error.name !== 'AbortError') byId('music-label').textContent = 'Reintentar música';
+    if (error.name === 'NotAllowedError' && retryOnInteraction) {
+      document.addEventListener('click', retryMusicOnInteraction, true);
+      document.addEventListener('keydown', retryMusicOnInteraction, true);
+    } else if (error.name !== 'AbortError') {
+      byId('music-label').textContent = 'Reintentar música';
+    }
   }
+}
+
+music.addEventListener('play', syncMusicControl);
+music.addEventListener('pause', syncMusicControl);
+musicToggle.addEventListener('click', () => {
+  clearMusicRetry();
+  if (!music.paused) music.pause();
+  else startMusic();
 });
+startMusic(true);
