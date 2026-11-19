@@ -155,10 +155,10 @@ function assignmentEmail(person, test = false) {
   const subject = (test ? '[PRUEBA] ' : '') + 'Tu amigo invisible · El Movidón';
   const body = [
     ...(test ? ['Este correo es una prueba. La asignación es ficticia.', ''] : []),
-    '¡Hola, ' + person.name + '!', '',
-    '¡Ya tenemos el resultado de El Movidón! Este año te toca hacerle un regalo a ' + person.recipient + '.',
-    'Nos vemos el 26 de diciembre de 2026 para el intercambio.',
-    '', '¡Que disfrutes preparando el regalo! 🎁'
+    '¡' + person.name + '! Ya salió el sorteo 🎅',
+    '🎁 Te toca regalarle a ' + person.recipient + '.',
+    '📅 Intercambio el 26 de diciembre de 2026.',
+    '', '¡Feliz Navidad! 🎄'
   ].join('\r\n');
   return 'mailto:' + encodeURIComponent(person.email).replace('%40', '@') +
     '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);

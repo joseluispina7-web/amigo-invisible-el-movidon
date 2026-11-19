@@ -68,12 +68,17 @@ function doPost(event) {
           name: 'Amigo invisible El Movidón',
           subject: request.drawId ? '[NUEVO SORTEO] Tu amigo invisible · El Movidón' : 'Tu amigo invisible · El Movidón',
           body: [
-            '¡Hola, ' + person.name + '!', '',
+            '¡' + person.name + '! Ya salió el sorteo 🎅',
             ...(request.drawId ? ['Esta asignación sustituye a la del sorteo anterior.', ''] : []),
-            '¡Ya tenemos el resultado de El Movidón! Este año te toca hacerle un regalo a ' + person.recipient + '.',
-            'Nos vemos el 26 de diciembre de 2026 para el intercambio.',
-            '', '¡Que disfrutes preparando el regalo! 🎁'
-          ].join('\n')
+            '🎁 Te toca regalarle a ' + person.recipient + '.',
+            '📅 Intercambio el 26 de diciembre de 2026.',
+            '', '¡Feliz Navidad! 🎄'
+          ].join('\n'),
+          htmlBody: '<p>¡' + escapeHtml(person.name) + '! Ya salió el sorteo 🎅</p>' +
+            (request.drawId ? '<p>Esta asignación sustituye a la del sorteo anterior.</p>' : '') +
+            '<p>🎁 Te toca regalarle a <strong>' + escapeHtml(person.recipient) + '</strong>.<br>' +
+            '📅 Intercambio el <strong>26 de diciembre de 2026</strong>.</p>' +
+            '<p>¡Feliz Navidad! 🎄</p>'
         });
         quota--;
         properties.setProperty(id, 'sent');
@@ -94,6 +99,11 @@ function validAssignment(person) {
     /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9-]+(?:\.[a-z0-9-]+)+$/i.test(person.email) &&
     typeof person.name === 'string' && person.name.length > 0 && person.name.length <= 80 &&
     typeof person.recipient === 'string' && person.recipient.length > 0 && person.recipient.length <= 80;
+}
+
+function escapeHtml(text) {
+  const entities = { '&': '&amp;', '<': '&lt;', '>': '&gt;' };
+  return text.replace(/[&<>]/g, character => entities[character]);
 }
 
 function reply(payload) {
