@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AMIGO INVISIBLE "EL MOVIDÓN"</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style.css">
+<script src="./app.js" type="module"></script>
+</head>
+<body>
+<header class="top"><div class="wrap brand"><span class="mark" aria-hidden="true">✦</span> AMIGO INVISIBLE "EL MOVIDÓN"</div></header>
+<main class="wrap">
+<section class="hero">
+<div><h1>Amigo invisible<br><em>«El Movidón»</em></h1>
+<p><time datetime="2026-12-26">26 de diciembre de 2026</time><br>Presupuesto por definir</p></div>
+<div class="art" aria-hidden="true"><i class="star one">✦</i><i class="star two">✧</i><span class="gift">🎁</span><i class="star three">✦</i></div>
+</section>
+<div id="public" class="layout">
+<section class="card">
+<h2>Apúntate</h2>
+<form id="signup"><label for="name">Nombre que verá el grupo</label><input id="name" name="name" autocomplete="name" maxlength="80" required>
+<label for="email">Tu correo electrónico</label><input id="email" name="email" type="email" autocomplete="email" maxlength="254" required>
+<p class="muted note">El correo se usará para avisarte del resultado del sorteo. En la lista solo se mostrará tu nombre.</p>
+<button class="primary" type="submit">Apuntarme</button></form>
+<p id="signup-status" class="status" role="status"></p>
+</section>
+<section class="card people"><h2>Participantes <span id="count"></span></h2><p class="muted" id="roster-status" role="status">Cargando participantes…</p><ul id="roster"></ul><button id="refresh" class="secondary" type="button" hidden>Volver a cargar</button></section>
+</div>
+<section id="organizer" class="card result" hidden>
+<h2>Organizar el sorteo</h2>
+<form id="login"><label for="key">Clave de organización</label><input type="password" id="key" autocomplete="current-password" required><button class="primary" type="submit">Abrir panel</button></form>
+<div id="panel" hidden><p id="summary" class="muted"></p><button class="primary" type="button" id="draw">Cerrar inscripciones y hacer el sorteo</button><div id="messages"></div></div>
+<p id="organizer-status" class="status" role="status"></p>
+</section>
+</main>
+<footer class="wrap"><a id="panel-link" href="?organizar">Organizar sorteo</a></footer>
+</body>
+</html>

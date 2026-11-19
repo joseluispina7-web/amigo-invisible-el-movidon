@@ -1,0 +1,53 @@
+:root{font-family:"DM Sans",system-ui,sans-serif;color:#19382e;background:#f3f6f0;line-height:1.5;--green:#163b30;--ink:#19382e;--muted:#51665b;--border:#d7e1d7}
+*{box-sizing:border-box}
+body{margin:0}
+[hidden]{display:none!important}
+.wrap{width:min(1120px,calc(100% - 48px));margin-inline:auto}
+.top{border-bottom:1px solid var(--border);background:#fff}
+.brand{min-height:74px;display:flex;align-items:center;gap:12px;font-family:Manrope,sans-serif;font-weight:800;font-size:.91rem;letter-spacing:.035em}
+.mark{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--green);color:#d8f190;font-size:1.2rem}
+.hero{margin-block:30px 24px;padding:46px 56px;background:var(--green);color:white;border-radius:28px;display:grid;grid-template-columns:1fr minmax(180px,31%);align-items:center;gap:20px;overflow:hidden}
+h1,h2{font-family:Manrope,system-ui,sans-serif;font-weight:800;line-height:1.07;margin:0}
+h1{font-size:clamp(2.5rem,5.1vw,4.4rem);letter-spacing:-.065em}
+h1 em{color:#d6ee95;font-style:normal}
+.hero p{font-size:1.07rem;max-width:420px;color:#e4efe7;margin:20px 0 0}
+.art{height:228px;border:1px solid #598174;border-radius:50%;position:relative;display:grid;place-items:center;background:radial-gradient(ellipse,#386958 5%,#214d40 65%,transparent 68%);max-width:280px;width:100%;justify-self:center}
+.gift{font-size:clamp(5.5rem,12vw,9rem);line-height:1;transform:rotate(-12deg);filter:drop-shadow(0 16px 15px #0c2c26)}
+.star{position:absolute;color:#d8f190;font-style:normal;font-size:1.6rem}
+.one{top:11%;right:17%;font-size:2.45rem}.two{bottom:15%;right:11%}.three{top:26%;left:10%}
+.layout{display:grid;grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);gap:20px;align-items:start}
+.card{padding:26px;background:white;border:1px solid var(--border);border-radius:20px;box-shadow:0 5px 18px #19382e08}
+h2{font-size:1.45rem;letter-spacing:-.04em;margin-bottom:16px}
+.people h2,.result h2{margin-bottom:6px}
+#count{font:700 .88rem "DM Sans",sans-serif;border-radius:20px;background:#e7efdf;display:inline-block;padding:4px 10px;vertical-align:middle;margin-left:5px}
+.muted{color:var(--muted);margin:0 0 15px}
+label{display:block;font-weight:700;font-size:.93rem;margin-bottom:5px}
+small{font-size:.79rem;font-weight:500;color:var(--muted)}
+input{background:#f7f9f5;border:1px solid var(--border);color:var(--ink);min-width:0;width:100%;height:46px;padding:0 12px;border-radius:9px;font:inherit}
+input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid #558631;outline-offset:2px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) 36px;gap:8px;align-items:center;margin-bottom:9px}
+.row button{height:36px;width:36px;border:0;background:#edf2e9;color:#374e44;border-radius:8px;font-size:1.25rem;padding:0}
+.row button:disabled{opacity:.4;cursor:default}
+button,.mail{font:700 .94rem "DM Sans",sans-serif;cursor:pointer;border-radius:10px;border:1px solid transparent;padding:11px 15px}
+.secondary{background:#e9f0e5;color:var(--green);margin-top:7px}
+.actions{grid-column:1/-1;display:flex;align-items:center;justify-content:flex-end;gap:14px;flex-wrap:wrap}
+#form-message{margin:0;color:#97322d}
+.primary,.mail{background:var(--green);color:white;text-decoration:none}
+.primary{padding:14px 26px}
+button:hover:not(:disabled),.mail:hover{filter:brightness(.9)}
+.result{max-width:720px;margin-inline:auto}
+.message{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--border);overflow-wrap:anywhere}
+.message span{display:block;color:var(--muted)}
+.mail{flex-shrink:0}
+footer{padding:32px 0;color:var(--muted);font-size:.8rem;font-weight:800;letter-spacing:.04em}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.hero{padding:32px}.art{height:175px}.actions{justify-content:flex-start}}
+@media(max-width:530px){.wrap{width:calc(100% - 28px)}.hero{grid-template-columns:1fr;padding:25px;margin-top:18px}.art{display:none}.card{padding:17px}.row{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr) 32px;gap:5px}.row button{width:32px}.row input{padding-inline:7px}.message{flex-wrap:wrap}}
+#signup label:not(:first-child){margin-top:15px}
+.note{margin-block:10px 16px;font-size:.94rem}
+.status{margin-block:12px 0}
+.status:empty{margin:0}
+#roster{list-style:none;margin:12px 0 0;padding:0}
+#roster li{border-top:1px solid var(--border);padding:10px 0;overflow-wrap:anywhere}
+#login button,#draw{margin-top:12px}
+footer a{color:inherit}
