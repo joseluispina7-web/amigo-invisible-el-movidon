@@ -147,7 +147,16 @@ editForm.addEventListener('submit', async event => {
   event.preventDefault();
   const previous = participants[participantChoice.value];
   if (!previous) return;
-  const changes = Object.fromEntries(new FormData(editForm));
+  await saveParticipant('PATCH', { ...Object.fromEntries(new FormData(editForm)), previous });
+});
+
+byId('remove-participant').addEventListener('click', async () => {
+  const previous = participants[participantChoice.value];
+  if (!previous || !confirm('¿Eliminar la inscripción de ' + previous.name + '?')) return;
+  await saveParticipant('DELETE', { previous });
+});
+
+async function saveParticipant(method, changes) {
   participantChoice.disabled = true;
   participantFields.disabled = true;
   byId('reload-participants').disabled = true;
@@ -155,11 +164,11 @@ editForm.addEventListener('submit', async event => {
   editStatus.textContent = 'Guardando cambios…';
   try {
     openPanel(await request('/organizer', {
-      method: 'PATCH',
+      method,
       headers: { Authorization: 'Bearer ' + organizerKey, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...changes, previous })
+      body: JSON.stringify(changes)
     }));
-    editStatus.textContent = 'Cambios guardados.';
+    editStatus.textContent = method === 'DELETE' ? 'Participante eliminado.' : 'Cambios guardados.';
   } catch (error) {
     editStatus.textContent = error.message;
   } finally {
@@ -168,7 +177,7 @@ editForm.addEventListener('submit', async event => {
     byId('reload-participants').disabled = false;
     byId('draw').disabled = participants.length < 2;
   }
-});
+}
 
 byId('draw').addEventListener('click', async event => {
   if (!confirm('Se cerrarán las inscripciones y se guardará el resultado. ¿Hacer el sorteo?')) return;
@@ -209,29 +218,34 @@ function playVideo() {
 videoToggle.hidden = false;
 video.addEventListener('play', syncVideoControl);
 video.addEventListener('pause', syncVideoControl);
+let videoStartTimer;
 videoToggle.addEventListener('click', () => {
+  clearTimeout(videoStartTimer);
   if (video.paused) playVideo();
   else video.pause();
 });
 if (!reduceMotion.matches) {
-  playVideo();
+  videoStartTimer = setTimeout(playVideo, 3000);
   const intro = byId('festive-intro');
   const ornaments = ['🎁', '❄', '🎄', '🔔', '✦', '🎅', '🍬'];
   for (let index = 0; index < 36; index++) {
     const ornament = document.createElement('span');
     ornament.textContent = ornaments[index % ornaments.length];
     ornament.style.setProperty('--left', (index * 37 % 97) + '%');
-    ornament.style.setProperty('--delay', (index * 73 % 570) + 'ms');
-    ornament.style.setProperty('--duration', (1720 + index * 97 % 530) + 'ms');
+    ornament.style.setProperty('--delay', (index * 73 % 850) + 'ms');
+    ornament.style.setProperty('--duration', (3970 + index * 97 % 880) + 'ms');
     ornament.style.setProperty('--size', (1.15 + index * 7 % 14 / 10) + 'rem');
     ornament.style.setProperty('--drift', (index * 17 % 69 - 34) + 'px');
     ornament.style.setProperty('--rotation', (120 + index * 31 % 270) + 'deg');
     intro.append(ornament);
   }
-  setTimeout(() => intro.remove(), 2900);
+  setTimeout(() => intro.remove(), 5800);
 }
 reduceMotion.addEventListener('change', event => {
-  if (event.matches) video.pause();
+  if (event.matches) {
+    clearTimeout(videoStartTimer);
+    video.pause();
+  }
 });
 
 function syncMusicControl() {

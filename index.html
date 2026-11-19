@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,700;9..144,900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./style.css?v=fiesta">
-<script src="./app.js?v=fiesta" type="module"></script>
+<link rel="stylesheet" href="./style.css?v=campanas">
+<script src="./app.js?v=campanas" type="module"></script>
 </head>
 <body>
 <div class="festive-intro" id="festive-intro" aria-hidden="true"></div>
@@ -17,13 +17,13 @@
   <div class="wrap brand">
     <span class="mark" aria-hidden="true">✦</span> Amigo invisible
     <button class="music" id="music-toggle" type="button" aria-pressed="false"><span aria-hidden="true">♫</span> <span id="music-label">Activar música</span></button>
-    <audio id="christmas-music" preload="none" loop src="./media/jingle-bells-fiesta.mp3"></audio>
+    <audio id="christmas-music" preload="none" loop src="./media/deck-the-halls.mp3"></audio>
   </div>
 </header>
 <main class="wrap">
 <section class="hero">
   <div class="film">
-    <video id="christmas-video" width="480" height="640" muted playsinline loop preload="metadata" poster="./media/el-movidon.jpg" aria-label="Vídeo navideño de El Movidón">
+    <video id="christmas-video" width="480" height="640" muted playsinline loop preload="metadata" poster="./media/portada-el-movidon.jpg" aria-label="Vídeo navideño de El Movidón">
       <source src="./media/el-movidon.mp4" type="video/mp4">
     </video>
     <button class="video-control" id="video-toggle" type="button" aria-label="Reproducir vídeo" hidden><span aria-hidden="true">▶</span></button>
@@ -56,7 +56,10 @@
 <fieldset id="participant-fields" hidden disabled>
 <label for="participant-name">Nombre</label><input id="participant-name" name="name" maxlength="80" required>
 <label for="participant-email">Correo electrónico</label><input id="participant-email" name="email" type="email" maxlength="254" required>
+<div class="participant-actions">
 <button class="primary" type="submit">Guardar cambios</button>
+<button class="secondary remove-participant" id="remove-participant" type="button">Eliminar participante</button>
+</div>
 </fieldset>
 <button class="secondary" type="button" id="reload-participants">Actualizar lista</button>
 <p id="edit-status" class="status" role="status"></p>

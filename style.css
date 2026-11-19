@@ -185,3 +185,5 @@ footer a { display: inline-flex; min-height: 44px; align-items: center; color: v
 }
 #participant-fields { min-width: 0; border: 0; margin: 8px 0; padding: 0; }
 #participant-fields label, #participant-fields button, #reload-participants { margin-top: 8px; }
+.participant-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.remove-participant { color: #8c1230; background: #fae6e9; }
