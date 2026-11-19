@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,700;9..144,900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./style.css?v=campanas">
-<script src="./app.js?v=campanas" type="module"></script>
+<link rel="stylesheet" href="./style.css?v=prueba-correo">
+<script src="./app.js?v=prueba-correo" type="module"></script>
 </head>
 <body>
 <div class="festive-intro" id="festive-intro" aria-hidden="true"></div>
@@ -17,7 +17,7 @@
   <div class="wrap brand">
     <span class="mark" aria-hidden="true">✦</span> Amigo invisible
     <button class="music" id="music-toggle" type="button" aria-pressed="false"><span aria-hidden="true">♫</span> <span id="music-label">Activar música</span></button>
-    <audio id="christmas-music" preload="none" loop src="./media/jingle-bell-rock-bobby-helms.mp3"></audio>
+    <audio id="christmas-music" autoplay preload="metadata" loop src="./media/jingle-bell-rock-bobby-helms.mp3"></audio>
   </div>
 </header>
 <main class="wrap">
@@ -63,6 +63,13 @@
 </fieldset>
 <button class="secondary" type="button" id="reload-participants">Actualizar lista</button>
 <p id="edit-status" class="status" role="status"></p>
+</form>
+<form id="test-email">
+<h3>Probar correo</h3>
+<p class="muted">Abre un borrador con una asignación ficticia. Envíatelo desde tu aplicación de correo para comprobar que llega.</p>
+<label for="test-email-address">Tu correo electrónico</label>
+<input id="test-email-address" type="email" autocomplete="email" maxlength="254" required>
+<button class="secondary" type="submit">Abrir correo de prueba</button>
 </form></div>
 <p id="organizer-status" class="status" role="status"></p>
 </section>

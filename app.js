@@ -95,19 +95,30 @@ function openPanel({ count, matches, people }) {
     link.className = 'mail';
     link.textContent = 'Abrir correo';
     link.setAttribute('aria-label', 'Abrir correo para ' + person.name);
-    const body = [
-      '¡Hola, ' + person.name + '!', '',
-      'En el amigo invisible «El Movidón» te ha tocado regalar a ' + person.recipient + '.',
-      'El intercambio será el 26 de diciembre de 2026.',
-      '', '¡Guárdate la sorpresa!'
-    ].join('\r\n');
-    link.href = 'mailto:' + encodeURIComponent(person.email).replace('%40', '@') +
-      '?subject=' + encodeURIComponent('Tu amigo invisible · El Movidón') +
-      '&body=' + encodeURIComponent(body);
+    link.href = assignmentEmail(person);
     item.append(name, link);
     return item;
   }));
 }
+
+function assignmentEmail(person, test = false) {
+  const subject = (test ? '[PRUEBA] ' : '') + 'Tu amigo invisible · El Movidón';
+  const body = [
+    ...(test ? ['Este correo es una prueba. La asignación es ficticia.', ''] : []),
+    '¡Hola, ' + person.name + '!', '',
+    'En el amigo invisible «El Movidón» te ha tocado regalar a ' + person.recipient + '.',
+    'El intercambio será el 26 de diciembre de 2026.',
+    '', '¡Guárdate la sorpresa!'
+  ].join('\r\n');
+  return 'mailto:' + encodeURIComponent(person.email).replace('%40', '@') +
+    '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+}
+
+byId('test-email').addEventListener('submit', event => {
+  event.preventDefault();
+  const email = byId('test-email-address').value.trim();
+  location.href = assignmentEmail({ email, name: 'Participante de prueba', recipient: 'Amigo de prueba' }, true);
+});
 
 byId('login').addEventListener('submit', async event => {
   event.preventDefault();
@@ -228,18 +239,18 @@ if (!reduceMotion.matches) {
   videoStartTimer = setTimeout(playVideo, 3000);
   const intro = byId('festive-intro');
   const ornaments = ['🎁', '❄', '🎄', '🔔', '✦', '🎅', '🍬'];
-  for (let index = 0; index < 36; index++) {
+  for (let index = 0; index < 64; index++) {
     const ornament = document.createElement('span');
     ornament.textContent = ornaments[index % ornaments.length];
     ornament.style.setProperty('--left', (index * 37 % 97) + '%');
-    ornament.style.setProperty('--delay', (index * 73 % 850) + 'ms');
-    ornament.style.setProperty('--duration', (3970 + index * 97 % 880) + 'ms');
-    ornament.style.setProperty('--size', (1.15 + index * 7 % 14 / 10) + 'rem');
+    ornament.style.setProperty('--delay', (index * 110) + 'ms');
+    ornament.style.setProperty('--duration', (4350 + index * 97 % 1050) + 'ms');
+    ornament.style.setProperty('--size', (1.45 + index * 7 % 15 / 10) + 'rem');
     ornament.style.setProperty('--drift', (index * 17 % 69 - 34) + 'px');
     ornament.style.setProperty('--rotation', (120 + index * 31 % 270) + 'deg');
     intro.append(ornament);
   }
-  setTimeout(() => intro.remove(), 5800);
+  setTimeout(() => intro.remove(), 12500);
 }
 reduceMotion.addEventListener('change', event => {
   if (event.matches) {
@@ -280,6 +291,7 @@ async function startMusic(retryOnInteraction = false) {
 
 music.addEventListener('play', syncMusicControl);
 music.addEventListener('pause', syncMusicControl);
+syncMusicControl();
 musicToggle.addEventListener('click', () => {
   clearMusicRetry();
   if (!music.paused) music.pause();
