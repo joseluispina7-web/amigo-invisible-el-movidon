@@ -67,17 +67,15 @@ function doPost(event) {
         MailApp.sendEmail({
           to: email,
           name: 'Amigo invisible El Movidón',
-          subject: request.drawId ? '[NUEVO SORTEO] Tu amigo invisible · El Movidón' : 'Tu amigo invisible · El Movidón',
+          subject: 'Tu amigo invisible · El Movidón',
           body: [
             '¡' + person.name + '! Ya salió el sorteo 🎅',
-            ...(request.drawId ? ['Esta asignación sustituye a la del sorteo anterior.', ''] : []),
             '🎁 Te toca regalarle a ' + person.recipient + '.',
             '📅 Intercambio el 26 de diciembre de 2026.',
             ...(request.budget ? ['💶 Presupuesto: ' + request.budget + '.'] : []),
             '', '¡Feliz Navidad! 🎄'
           ].join('\n'),
           htmlBody: '<p>¡' + escapeHtml(person.name) + '! Ya salió el sorteo 🎅</p>' +
-            (request.drawId ? '<p>Esta asignación sustituye a la del sorteo anterior.</p>' : '') +
             '<p>🎁 Te toca regalarle a <strong>' + escapeHtml(person.recipient) + '</strong>.<br>' +
             '📅 Intercambio el <strong>26 de diciembre de 2026</strong>.' +
             (request.budget ? '<br>💶 Presupuesto: <strong>' + escapeHtml(request.budget) + '</strong>.' : '') +
